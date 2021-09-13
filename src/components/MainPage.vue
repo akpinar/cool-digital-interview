@@ -23,7 +23,7 @@ export default {
     return {
       username: '',
       repos: [],
-      array: [],
+      langsRate: [],
       totalCodeSize: 0,
       key: '',
       index: 0
@@ -59,13 +59,24 @@ export default {
       Object.keys(langsGroup).map((key) => {
         let codeSum = 0
         for (let j = 0; j < langsGroup[key].length; j++) {
-          codeSum += langsGroup[key][j].codeSize
+          codeSum += langsGroup[key][j].size
         }
-        this.array.push({'name': key, 'codeSize': codeSum})
+        this.langsRate.push({'name': key, 'size': codeSum})
       })
-      for (let k = 0; k < this.array.length; k++) {
-        this.array[k].codeSize = ((100 * this.array[k].codeSize) / this.totalCodeSize).toFixed(5)
+      for (let k = 0; k < this.langsRate.length; k++) {
+        this.langsRate[k].size = ((100 * this.langsRate[k].size) / this.totalCodeSize).toFixed(5)
       }
+      var temp = 0;
+      for (var i = 0; i < this.langsRate.length; i++) {
+        for (var j = i; j < this.langsRate.length; j++) {
+          if (this.langsRate[j].size > this.langsRate[i].size) {
+            temp = this.langsRate[j];
+            this.langsRate[j] = this.langsRate[i];
+            this.langsRate[i] = temp;
+          }
+        }
+      }
+      console.log("tla", this.langsRate)
     },
   }
 }
