@@ -2,7 +2,8 @@
   <div>
     <div>
       <input type="input"
-             v-model="username" placeholder="Kullanıcı Adı"/>
+             v-model="username"
+             placeholder="Kullanıcı Adı"/>
     </div>
     <div>
       <button class="search-button"
@@ -22,7 +23,10 @@ export default {
     return {
       username: '',
       repos: [],
-      array: []
+      array: [],
+      totalCodeSize: 0,
+      key: '',
+      index: 0
     }
   },
   methods: {
@@ -35,7 +39,7 @@ export default {
         for (const [key, value] of Object.entries(reposLanguages.data)) {
           let lang = {
             name: key,
-            codeSize: value
+            size: value
           }
           langs.push(lang)
         }
@@ -45,7 +49,23 @@ export default {
           return r;
         }, Object.create(null));
       }
-      console.log("result", langsGroup)
+      for (const [name, lang] of Object.entries(langsGroup)) {
+        this.key = name
+        for (const [index, code] of Object.entries(lang)) {
+          this.index = index
+          this.totalCodeSize = this.totalCodeSize + code.size
+        }
+      }
+      Object.keys(langsGroup).map((key) => {
+        let codeSum = 0
+        for (let j = 0; j < langsGroup[key].length; j++) {
+          codeSum += langsGroup[key][j].codeSize
+        }
+        this.array.push({'name': key, 'codeSize': codeSum})
+      })
+      for (let k = 0; k < this.array.length; k++) {
+        this.array[k].codeSize = ((100 * this.array[k].codeSize) / this.totalCodeSize).toFixed(5)
+      }
     },
   }
 }
