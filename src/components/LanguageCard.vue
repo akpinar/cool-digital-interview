@@ -1,13 +1,20 @@
 <template>
   <div class="container">
-    <div class="index-container">
-      {{ index + 1 }}
+    <div class="lang-container index-container">
+      <div>
+        {{ index + 1 }}
+      </div>
     </div>
-    <div class="name-container">
-      {{ name }}
+    <div class="lang-container name-container">
+      <div>
+        {{ name }}
+      </div>
     </div>
-    <div class="size-container">
-      % {{ size }}
+    <div class="lang-container size-container">
+      <div>
+        %{{ size }}
+      </div>
+
     </div>
 
   </div>
@@ -26,15 +33,27 @@ export default {
 
 <style lang="css">
 .container {
+  width: 25%;
 }
 
 .index-container {
-  font-weight: bold;
   font-size: large;
 }
 
 .name-container {
+  font-weight: bold;
   text-transform: uppercase;
+}
+
+.lang-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+}
+
+.size-container {
+  margin-bottom: 10px;
 }
 
 

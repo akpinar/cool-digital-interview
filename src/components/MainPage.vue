@@ -7,11 +7,21 @@
       </div>
       <div class="button-container">
         <button class="search-button"
-                @click="getUsersRepos">Ara
+                @click="getUsersRepos">
+          <img v-if="show" width="24" height="24" src="/icon/icons8-loading-24.png" alt="">
+          Ara
         </button>
       </div>
     </div>
+    <div v-if="show" class="alert-container">
+      <div class="alert">
+        <label class="alert-message">
+          Kullanıcı bulunamadı!
+        </label>
+      </div>
+    </div>
     <div v-if="langsRate.length" class="bottom-container">
+
       <div class="card">
         <div class="info-container">
           <div class="image-info-container">
@@ -24,26 +34,43 @@
             </div>
           </div>
           <div class="repo-info-container">
-            <div>{{ userInfo.public_repos }} repo(s)</div>
-            <div>{{ totalCodeSize }}</div>
+            <div>
+              <span class="repo-count-container">
+              {{ userInfo.public_repos }}
+              </span>
+              <span>
+                repo(s)
+              </span>
+            </div>
+            <div>
+              <span class="total-code-size-container">
+              {{ totalCodeSize }}
+              </span>
+              <span>
+                row code
+              </span>
+            </div>
           </div>
         </div>
         <hr>
         <div class="card-container">
-          <div v-for="(lang,index) in langsRate" :key="index" class="card-deneme" style="display: table-cell;">
+          <span v-for="(lang,index) in langsRate" :key="index" class="container">
+          <div class="div">
             <language-card :name="lang.name" :size="lang.size" :index="index"></language-card>
           </div>
+            </span>
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
 import RepoService from "../../service/repo.service";
 import LanguageService from "../../service/language.service";
-import LanguageCard from "./LanguageCard";
 import UserService from "../../service/user.service";
+import LanguageCard from "./LanguageCard";
 
 export default {
   name: "MainPage",
@@ -57,10 +84,25 @@ export default {
       key: '',
       index: 0,
       userInfo: {},
-      langs: []
+      langs: [],
+      show: false
     }
   },
   methods: {
+    async getUsersRepos() {
+      this.show = true
+
+      this.langsRate = []
+      let repos = await new RepoService().getUserRepos(this.username)
+      if (repos.status === 200) {
+        this.show = false
+        this.repos = repos.data
+        await this.getUserInfo()
+        await this.getReposLanguages()
+        this.username = ''
+      }
+
+    },
     async getUserInfo() {
       let info = await new UserService().getUserInfo(this.username)
       this.userInfo = info.data
@@ -75,10 +117,8 @@ export default {
           }
           this.langs.push(lang)
         }
-        await this.groupByLanguageName()
-
       }
-
+      await this.groupByLanguageName()
     },
     async groupByLanguageName() {
       var langsGroup = this.langs.reduce(function (r, a) {
@@ -98,10 +138,21 @@ export default {
       }
       await this.totalCodeSizeSumByLangName(langsGroup)
     },
+    async totalCodeSizeSumByLangName(langsGroup) {
+      Object.keys(langsGroup).map((key) => {
+        let codeSum = 0
+        for (let j = 0; j < langsGroup[key].length; j++) {
+          codeSum += langsGroup[key][j].size
+        }
+        this.langsRate.push({'name': key, 'size': codeSum})
+      })
+      await this.calculateRateByLanguage()
+    },
     async calculateRateByLanguage() {
       for (let k = 0; k < this.langsRate.length; k++) {
         this.langsRate[k].size = ((100 * this.langsRate[k].size) / this.totalCodeSize).toFixed(5)
       }
+      await this.sortingLargestToSmallest()
     },
     async sortingLargestToSmallest() {
       var temp = 0;
@@ -115,24 +166,6 @@ export default {
         }
       }
     },
-    async totalCodeSizeSumByLangName(langsGroup) {
-      Object.keys(langsGroup).map((key) => {
-        let codeSum = 0
-        for (let j = 0; j < langsGroup[key].length; j++) {
-          codeSum += langsGroup[key][j].size
-        }
-        this.langsRate.push({'name': key, 'size': codeSum})
-      })
-      await this.sortingLargestToSmallest()
-    },
-    async getUsersRepos() {
-      this.langsRate = []
-      let repos = await new RepoService().getUserRepos(this.username)
-      this.repos = repos.data
-      await this.getUserInfo()
-      await this.getReposLanguages()
-      this.username = ''
-    },
   }
 }
 </script>
@@ -140,6 +173,8 @@ export default {
 <style scoped>
 .card-container {
   width: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .card {
@@ -160,6 +195,15 @@ export default {
   padding: 15px;
   border: 0;
   border-radius: 10px
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.div {
+  width: 33.3%
 }
 
 .search-button {
@@ -203,13 +247,23 @@ export default {
 .user-info-container {
   display: flex;
   flex-direction: column;
-  justify-content: center
+  justify-content: center;
+  margin-left: 25px;
 }
 
 .repo-info-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.repo-count-container {
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.total-code-size-container {
+  font-size: xx-large;
   font-weight: bold;
 }
 
@@ -220,6 +274,28 @@ export default {
 .info-container {
   display: flex;
   justify-content: space-between
+}
+
+.alert-container {
+  display: flex;
+  justify-content: center;
+}
+
+.alert {
+  background-color: #ff3938;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 1200px;
+}
+
+.alert-message {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+
 }
 
 </style>
