@@ -1,8 +1,15 @@
 <template>
   <div class="container">
-    <div>{{ index }}</div>
-    <div>{{ name }}</div>
-    <div>% {{ codeSize }}</div>
+    <div class="index-container">
+      {{ index + 1 }}
+    </div>
+    <div class="name-container">
+      {{ name }}
+    </div>
+    <div class="size-container">
+      % {{ size }}
+    </div>
+
   </div>
 </template>
 
@@ -11,7 +18,7 @@ export default {
   name: "LanguageCard",
   props: {
     name: String,
-    codeSize: Number,
+    size: String,
     index: Number
   }
 }
@@ -19,7 +26,15 @@ export default {
 
 <style lang="css">
 .container {
-  width: 33.3%;
+}
+
+.index-container {
+  font-weight: bold;
+  font-size: large;
+}
+
+.name-container {
+  text-transform: uppercase;
 }
 
 
