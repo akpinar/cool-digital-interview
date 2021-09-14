@@ -8,7 +8,7 @@
       <div class="button-container">
         <button class="search-button"
                 @click="getUsersRepos">
-          <img v-if="show" width="24" height="24" src="/icon/icons8-loading-24.png" alt="">
+          <img v-if="showIcon" width="14" height="14" src="../../icon/icons8-loading-24.png" alt="">
           Ara
         </button>
       </div>
@@ -85,23 +85,29 @@ export default {
       index: 0,
       userInfo: {},
       langs: [],
-      show: false
+      show: false,
+      showIcon: false
+
     }
   },
   methods: {
     async getUsersRepos() {
-      this.show = true
-
       this.langsRate = []
-      let repos = await new RepoService().getUserRepos(this.username)
-      if (repos.status === 200) {
-        this.show = false
-        this.repos = repos.data
-        await this.getUserInfo()
-        await this.getReposLanguages()
-        this.username = ''
+      this.showIcon = true
+      this.show = false
+      if (this.username === '') {
+        this.showIcon = false
+        this.show = true
+      } else {
+        let repos = await new RepoService().getUserRepos(this.username)
+        if (repos.status === 200) {
+          this.show = false
+          this.repos = repos.data
+          await this.getUserInfo()
+          await this.getReposLanguages()
+          this.username = ''
+        }
       }
-
     },
     async getUserInfo() {
       let info = await new UserService().getUserInfo(this.username)
@@ -165,6 +171,7 @@ export default {
           }
         }
       }
+      this.showIcon = false
     },
   }
 }
