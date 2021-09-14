@@ -1,24 +1,32 @@
 # cool-digital-interview
 
-## Project setup
+
+#### Projemin amacı
+
+Kullanıcı adı girilen Github kullanıcısının kullandığı dilleri ve oranlarını listelemektir.
+
+### Gerekli paketlerin yüklenmesi için:
+
 ```
-yarn install
+npm install
 ```
 
-### Compiles and hot-reloads for development
+### Projeyi çalıştırmak için:
+
 ```
-yarn serve
+npm run serve
 ```
 
-### Compiles and minifies for production
+### Build almak için:
+
 ```
-yarn build
+npm run build
 ```
 
-### Lints and fixes files
-```
-yarn lint
-```
+### Kullanılan Paketler:
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+```
+    "axios": "^0.21.4",
+    "core-js": "^3.6.5",
+    "vue": "^3.0.0"
+```
