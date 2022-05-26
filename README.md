@@ -1,4 +1,4 @@
-# cool-digital-interview
+# github-api-exercise
 
 
 #### Projemin amacı
